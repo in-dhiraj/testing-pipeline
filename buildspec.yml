@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18  # Choose the appropriate Node.js version
+    commands:
+      - npm install  # Install your application's dependencies
+      - chmod +x ./scripts/create_config.sh
+      - sh ./scripts/create_config.sh
+      - echo config is created `date`
+  build:
+    commands:
+      - echo Build is started `date`
+      - echo installing production dependencies `date`
+      - rm -rf node_modules
+      - npm install --only=production
+      - echo installing production dependencies Completed `date`
+  post_build:
+    commands:
+      - echo copying files in temp
+      - mkdir temp;
+      - cp .npmrc temp/
+      - cp .env temp/
+      - cp -rv scripts temp
+      - cp appspec.yml temp/
+      - cp package.json temp/
+      - echo copying files in temp is done
+artifacts:
+  files:
+    - '**/*'  # Include all files in the build artifact
+  discard-paths: no
+  base-directory: temp
